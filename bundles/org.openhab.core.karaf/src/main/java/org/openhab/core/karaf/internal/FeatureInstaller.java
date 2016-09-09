@@ -13,6 +13,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -252,20 +254,29 @@ public class FeatureInstaller implements ConfigurationListener {
     }
 
     private void installAddons(final FeaturesService service, final Map<String, Object> config) {
+        Set<String> features = new HashSet<>();
         for (String type : addonTypes) {
             Object install = config.get(type);
             if (install instanceof String) {
-                installFeatures(service, type, (String) install);
+                for (String addon : ((String) install).split(",")) {
+                    if (StringUtils.isNotBlank(addon)) {
+                        String name = PREFIX + type + "-" + addon.trim();
+                        features.add(name);
+                    }
+                }
             }
+        }
+        if (!features.isEmpty()) {
+            installFeatures(service, features);
         }
     }
 
-    private void installFeatures(FeaturesService featuresService, String type, String install) {
-        for (String addon : install.split(",")) {
-            if (StringUtils.isNotBlank(addon)) {
-                String name = PREFIX + type + "-" + addon.trim();
-                installFeature(featuresService, name);
-            }
+    private static void installFeatures(FeaturesService featuresService, Set<String> names) {
+        try {
+            featuresService.installFeatures(names, EnumSet.of(FeaturesService.Option.Upgrade));
+            logger.info("Installed '{}'", StringUtils.join(names, ", "));
+        } catch (Exception e) {
+            logger.error("Failed installing '{}': {}", StringUtils.join(names, ", "), e.getMessage());
         }
     }
 
