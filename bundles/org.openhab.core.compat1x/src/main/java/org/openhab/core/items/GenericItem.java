@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,17 +46,11 @@ abstract public class GenericItem implements Item {
         this.name = name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State getState() {
         return state;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State getStateAs(Class<? extends State> typeClass) {
         if (typeClass != null && typeClass.isInstance(state)) {
@@ -73,17 +67,11 @@ abstract public class GenericItem implements Item {
         this.eventPublisher = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<String> getGroupNames() {
         return groupNames;
@@ -120,9 +108,6 @@ abstract public class GenericItem implements Item {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getName() + " (" + "Type=" + getClass().getSimpleName() + ", " + "State=" + getState() + ")";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,7 +37,7 @@ public class ChartProviderDelegate implements org.eclipse.smarthome.ui.chart.Cha
 
     @Override
     public BufferedImage createChart(String service, String theme, Date startTime, Date endTime, int height, int width,
-            String items, String groups) throws ItemNotFoundException {
+            String items, String groups, Integer dpi, Boolean legend) throws ItemNotFoundException {
         try {
             return provider.createChart(service, theme, startTime, endTime, height, width, items, groups);
         } catch (org.openhab.core.items.ItemNotFoundException e) {

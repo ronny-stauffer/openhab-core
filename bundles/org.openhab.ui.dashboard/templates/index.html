@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}">
 <head>
 
 <meta charset="utf-8" />
@@ -8,8 +8,8 @@
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>openHAB</title>
 <link type="text/css" href="fonts/icomoon.css" rel="stylesheet" media="all">
-<link type="text/css" href="bootstrap.min.css" rel="stylesheet"></link>
-<link type="text/css" href="main.css" rel="stylesheet"></link>
+<link type="text/css" href="css/bootstrap.min.css" rel="stylesheet"></link>
+<link type="text/css" href="css/main.css" rel="stylesheet"></link>
 <link rel="icon" href="favicon.ico" type="image/vnd.microsoft.icon"><link>
 
 <script type="text/javascript" src="js/jquery.min.js"></script>
@@ -23,29 +23,29 @@
         </div>
     </header>
     <section class="container">
-        <h1>Welcome to openHAB 2</h1>
+        <h1>${index.welcome}</h1>
         <div class="line">
             <div class="decorator"></div>
             <hr />
         </div>
-        <!--warn-->
+        ${warn}
         <div class="links row">
-            <!--entries-->
+            ${entries}
         </div>
         <div class="line">
             <div class="geolocation">
                 <div class="decorator"></div>
                 <hr />
-                <p>If you allow your browser to access your location, openHAB will use it for weather and astro information.</p>
-                <p><span>Your location: </span><span id="geolocation"></span></p>
+                <p>${index.location-info}</p>
+                <p><span>${index.your-location} </span><span id="geolocation"></span></p>
             </div>
             <div class="decorator"></div>
             <hr />
         </div>
-        Getting started? Please refer to the <a href="http://docs.openhab.org/">online documentation</a>.             
+        ${common.getting-started}
     </section>
     <footer>
-        <p>openHAB <!--version--></p>
+        <p>openHAB ${version}</p>
     </footer>
 </body>
 </html>

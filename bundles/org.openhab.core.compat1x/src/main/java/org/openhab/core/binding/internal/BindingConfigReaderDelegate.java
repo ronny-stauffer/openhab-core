@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.core.binding.internal;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.model.item.BindingConfigParseException;
 import org.eclipse.smarthome.model.item.BindingConfigReader;
 
@@ -42,8 +43,8 @@ public class BindingConfigReaderDelegate implements BindingConfigReader {
     }
 
     @Override
-    public void processBindingConfiguration(String context, String itemType, String itemName, String bindingConfig)
-            throws BindingConfigParseException {
+    public void processBindingConfiguration(String context, String itemType, String itemName, String bindingConfig,
+            Configuration configuration) throws BindingConfigParseException {
         try {
             reader.processBindingConfiguration(context, getOpenHABItem(itemType, itemName), bindingConfig);
         } catch (org.openhab.model.item.binding.BindingConfigParseException e) {
@@ -60,6 +61,8 @@ public class BindingConfigReaderDelegate implements BindingConfigReader {
             throws BindingConfigParseException {
 
         switch (itemType) {
+            case "Group":
+                return new org.openhab.core.items.GroupItem(itemName);
             case "Switch":
                 return new org.openhab.core.library.items.SwitchItem(itemName);
             case "Dimmer":

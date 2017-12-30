@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,8 +10,13 @@ package org.openhab.ui.dashboard.internal;
 
 import java.io.IOException;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,11 +35,15 @@ import org.slf4j.LoggerFactory;
  * that are registered as a service.
  *
  * @author Kai Kreuzer
+ * @author Laurent Garnier - internationalization
+ * @author Hilbrand Bouwkamp - internationalization
  *
  */
 public class DashboardServlet extends HttpServlet {
 
     private static final long serialVersionUID = -5154582000538034381L;
+
+    private static final Pattern MESSAGE_KEY_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
 
     private final Logger logger = LoggerFactory.getLogger(DashboardServlet.class);
 
@@ -50,14 +59,18 @@ public class DashboardServlet extends HttpServlet {
 
     private Set<DashboardTile> tiles;
 
+    private Function<String, String> localizeFunction;
+
     public DashboardServlet(ConfigurationAdmin configurationAdmin, String indexTemplate, String entryTemplate,
-            String warnTemplate, String setupTemplate, Set<DashboardTile> tiles) {
+            String warnTemplate, String setupTemplate, Set<DashboardTile> tiles,
+            Function<String, String> localizeFunction) {
         this.configurationAdmin = configurationAdmin;
         this.indexTemplate = indexTemplate;
         this.entryTemplate = entryTemplate;
         this.warnTemplate = warnTemplate;
         this.setupTemplate = setupTemplate;
         this.tiles = tiles;
+        this.localizeFunction = localizeFunction;
         isExposed(null);
     }
 
@@ -70,31 +83,35 @@ public class DashboardServlet extends HttpServlet {
         }
     }
 
-    private void serveDashboard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String index = indexTemplate.replace("<!--version-->", OpenHAB.getVersion() + " " + OpenHAB.buildString());
+    private void serveDashboard(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         StringBuilder entries = new StringBuilder();
         for (DashboardTile tile : tiles) {
-            String entry = entryTemplate.replace("<!--name-->", tile.getName());
+            Map<String, String> entryMap = new HashMap<>();
+            entryMap.put("name", tile.getName());
             String overlay = tile.getOverlay() == null ? "none" : tile.getOverlay();
 
-            entry = entry.replace("<!--url-->", tile.getUrl());
-            entry = entry.replace("<!--overlay-->", overlay);
-            entry = entry.replace("<!--icon-->", tile.getImageUrl());
-            entries.append(entry);
+            entryMap.put("url", tile.getUrl());
+            entryMap.put("overlay", overlay);
+            entryMap.put("icon", tile.getImageUrl());
+            entries.append(replaceKeysFromMap(entryTemplate, entryMap));
         }
-        resp.setContentType("text/html;charset=UTF-8");
-        if (tiles.size() == 0) {
+        if (tiles.isEmpty()) {
             if ("minimal".equals(getPackage())) {
                 entries.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-                entries.append("No user interfaces installed.");
+                entries.append("${entry.no-ui-installed}");
             } else {
                 entries.append(
                         "&nbsp;&nbsp;&nbsp;&nbsp;<div class=\"spinner spinner--steps\"><img src=\"img/spinner.svg\"></div>&nbsp;&nbsp;");
-                entries.append("Please stand by while UIs are being installed. This can take several minutes.");
+                entries.append("${entry.install-running}");
             }
         }
-        String warn = isExposed(req) ? warnTemplate : "";
-        resp.getWriter().append(index.replace("<!--entries-->", entries.toString()).replace("<!--warn-->", warn));
+        Map<String, String> replaceMap = new HashMap<>();
+        replaceMap.put("version", OpenHAB.getVersion() + " " + OpenHAB.buildString());
+        replaceMap.put("entries", entries.toString());
+        replaceMap.put("warn", isExposed(req) ? warnTemplate : "");
+        // Set the messages in the session
+        resp.setContentType("text/html;charset=UTF-8");
+        resp.getWriter().append(replaceKeysWithLocaleFunction(replaceKeysFromMap(indexTemplate, replaceMap)));
         resp.getWriter().close();
     }
 
@@ -103,9 +120,10 @@ public class DashboardServlet extends HttpServlet {
             setPackage(req.getParameter("type"));
             resp.sendRedirect(req.getRequestURI());
         } else {
+            Map<String, String> replaceMap = new HashMap<>();
+            replaceMap.put("version", OpenHAB.getVersion() + " " + OpenHAB.buildString());
             resp.setContentType("text/html;charset=UTF-8");
-            resp.getWriter().append(
-                    setupTemplate.replace("<!--version-->", OpenHAB.getVersion() + " " + OpenHAB.buildString()));
+            resp.getWriter().append(replaceKeysWithLocaleFunction(replaceKeysFromMap(setupTemplate, replaceMap)));
             resp.getWriter().close();
         }
     }
@@ -179,5 +197,26 @@ public class DashboardServlet extends HttpServlet {
             logger.error("Error while accessing the configuration admin: {}", e.getMessage());
         }
         return null;
+    }
+
+    private String replaceKeysWithLocaleFunction(String template) {
+        return replaceKeysWithFunction(template, (key) -> localizeFunction.apply(key));
+    }
+
+    private String replaceKeysFromMap(String template, Map<String, String> map) {
+        return replaceKeysWithFunction(template,
+                (key) -> Matcher.quoteReplacement(map.getOrDefault(key, "${" + key + '}')));
+    }
+
+    private String replaceKeysWithFunction(String template, Function<String, String> getMessage) {
+        Matcher m = MESSAGE_KEY_PATTERN.matcher(template);
+        StringBuffer sb = new StringBuffer();
+
+        while (m.find()) {
+            String key = m.group(1);
+            m.appendReplacement(sb, getMessage.apply(key));
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 }

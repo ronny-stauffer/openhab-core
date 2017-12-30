@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,9 +62,6 @@ public class DimmerItem extends SwitchItem {
         return acceptedCommandTypes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setState(State state) {
         // we map ON/OFF values to the percent values 0 and 100
@@ -77,9 +74,6 @@ public class DimmerItem extends SwitchItem {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State getStateAs(Class<? extends State> typeClass) {
         if (state.getClass() == typeClass) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,11 +16,11 @@ import org.openhab.core.types.State;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+/**
+ *
+ * @author Kai Kreuzer - Initial contribution
+ */
 abstract public class AbstractEventSubscriber implements EventHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(Event event) {
         String itemName = (String) event.getProperty("item");
@@ -47,16 +47,10 @@ abstract public class AbstractEventSubscriber implements EventHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void receiveCommand(String itemName, Command command) {
         // default implementation: do nothing
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void receiveUpdate(String itemName, State newState) {
         // default implementation: do nothing
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,9 +58,6 @@ public abstract class AbstractActiveBinding<P extends BindingProvider> extends A
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void bindingChanged(BindingProvider provider, String itemName) {
         super.bindingChanged(provider, itemName);
@@ -72,9 +69,6 @@ public abstract class AbstractActiveBinding<P extends BindingProvider> extends A
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void allBindingsChanged(BindingProvider provider) {
         super.allBindingsChanged(provider);
@@ -131,18 +125,11 @@ public abstract class AbstractActiveBinding<P extends BindingProvider> extends A
 
     /** private inner class, which delegates method calls to the outer binding instance */
     private class BindingActiveService extends AbstractActiveService {
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void start() {
             super.start();
         }
 
-        /**
-         * @{inheritDoc}
-         */
         @Override
         public void interrupt() {
             if (!bindingsExist()) {

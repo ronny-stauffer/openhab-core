@@ -13,10 +13,12 @@
 
     <feature name="openhab-runtime-base" description="openHAB Runtime Base" version="${project.version}">
         <feature>esh-base</feature>
+        <feature>esh-config-serial</feature>
         <feature>esh-io-console-karaf</feature>
         <feature>esh-io-rest-sitemap</feature>
         <feature>esh-io-rest-voice</feature>
         <feature>esh-io-rest-mdns</feature>
+        <feature>esh-model-lsp</feature>
         <feature>esh-model-item-runtime</feature>
         <feature>esh-model-persistence-runtime</feature>
         <feature>esh-model-rule-runtime</feature>
@@ -27,11 +29,9 @@
         <feature>esh-storage-json</feature>
         <feature>openhab-runtime-certificate</feature>
         <feature>openhab-transport-mdns</feature>
-        <feature dependency="true">shell</feature>
+        <feature prerequisite="true">shell</feature>
+        <feature prerequisite="true">wrapper</feature>
         <bundle start-level="90">mvn:org.openhab.core/org.openhab.core/${project.version}</bundle>
-        <bundle prerequisite="true">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karaf.version}</bundle>
-        <bundle prerequisite="true">mvn:org.apache.karaf.wrapper/org.apache.karaf.wrapper.core/${karaf.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-proxy/${jetty.version}</bundle>
         <bundle>mvn:org.openhab.core/org.openhab.core.karaf/${project.version}</bundle>
         <bundle>mvn:org.openhab.core/org.openhab.io.sound/${project.version}</bundle>
         <bundle>mvn:org.openhab.core/org.openhab.ui.dashboard/${project.version}</bundle>
@@ -58,11 +58,17 @@
         <feature>esh-model-sitemap</feature>
         <feature>esh-ui</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/3.1_7</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.2.3</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.2.3</bundle>
         <bundle>mvn:org.openhab.core/org.openhab.core.compat1x/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transport-coap" description="CoAP Transport" version="${project.version}">
         <feature>esh-io-transport-coap</feature>
+    </feature>
+
+    <feature name="openhab-transport-http" description="HTTP Transport" version="${project.version}">
+        <feature>esh-io-transport-http</feature>
     </feature>
 
     <feature name="openhab-transport-mdns" description="mDNS Transport" version="${project.version}">
@@ -74,7 +80,7 @@
     </feature>
 
     <feature name="openhab-transport-serial" description="Serial Transport" version="${project.version}">
-        <bundle start-level="80">mvn:org.openhab/nrjavaserial/${nrjavaserial.version}</bundle>
+        <feature>esh-io-transport-serial</feature>
     </feature>
 
     <feature name="openhab-transport-upnp" description="UPnP Transport" version="${project.version}">
@@ -95,6 +101,11 @@
         <feature>esh-automation-parser-gson</feature>
         <feature>esh-automation-providers</feature>
         <feature>esh-automation-rest</feature>
+    </feature>
+
+    <feature name="openhab-ui-homebuilder" description="Home Builder" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle>mvn:org.openhab.core/org.openhab.ui.homebuilder/${project.version}</bundle>
     </feature>
 
 </features>

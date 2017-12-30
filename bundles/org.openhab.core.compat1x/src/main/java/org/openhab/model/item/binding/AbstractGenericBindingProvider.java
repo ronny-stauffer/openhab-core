@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 by the respective copyright holders.
+ * Copyright (c) 2015-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,25 +57,16 @@ public abstract class AbstractGenericBindingProvider implements BindingConfigRea
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addBindingChangeListener(BindingChangeListener listener) {
         listeners.add(listener);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeBindingChangeListener(BindingChangeListener listener) {
         listeners.remove(listener);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void processBindingConfiguration(String context, Item item, String bindingConfig)
             throws BindingConfigParseException {
@@ -92,9 +83,6 @@ public abstract class AbstractGenericBindingProvider implements BindingConfigRea
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeConfigurations(String context) {
         Set<Item> items = null;
@@ -123,30 +111,21 @@ public abstract class AbstractGenericBindingProvider implements BindingConfigRea
             try {
                 listener.bindingChanged(this, item.getName());
             } catch (Exception e) {
-                logger.error("Binding " + listener.getClass().getName() + " threw an exception: ", e);
+                logger.error("Binding {} threw an exception: ", listener.getClass().getName(), e);
             }
         }
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public boolean providesBindingFor(String itemName) {
         return bindingConfigs.get(itemName) != null;
     }
 
-    /**
-     * @{inheritDoc}
-     */
     @Override
     public boolean providesBinding() {
         return !bindingConfigs.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<String> getItemNames() {
         return new ArrayList<>(bindingConfigs.keySet());
